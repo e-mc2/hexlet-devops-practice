@@ -43,3 +43,9 @@ ansible all -i inventory.ini -u dima -a 'uptime'
 51.250.87.170 | CHANGED | rc=0 >>
  19:29:26 up 54 min,  1 user,  load average: 0.04, 0.01, 0.00
 ```
+
+make команда
+
+```
+make ping
+```
