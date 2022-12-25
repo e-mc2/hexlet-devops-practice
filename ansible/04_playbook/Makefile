@@ -1,4 +1,4 @@
-.PHONY: play
+.PHONY: install delete
 
 install:
 	ansible-playbook playbook_install_git.yml -i inventory.ini
