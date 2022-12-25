@@ -1,0 +1,55 @@
+- hosts: appservers
+
+  tasks:
+
+    - name: apt-get update
+      ansible.builtin.apt:
+        update_cache: true
+      become: true
+
+    - name: install git
+      ansible.builtin.apt:
+        name: git
+        state: present
+      become: true
+      tags: [init, git]
+
+    - name: install nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: latest
+      become: true
+      tags: [init, nginx]
+
+    - name: install python 3.10
+      ansible.builtin.apt:
+        name: python3.10
+        state: present
+      become: true
+      tags: [init, python]
+
+    - name: install golang
+      ansible.builtin.apt:
+        name: golang-go
+        state: present
+      become: true
+      tags: [init, golang]
+
+    - name: create user arya
+      ansible.builtin.user:
+        name: arya
+        expires: -1
+      become: true
+      tags: [users]
+
+    - name: create user sansa
+      ansible.builtin.user:
+        name: sansa
+      become: true
+      tags: [users]
+
+    - name: create user tirion
+      ansible.builtin.user:
+        name: tirion
+      become: true
+      tags: [users]
