@@ -1,0 +1,32 @@
+- hosts: appservers
+
+  tasks:
+
+    - name: install nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: latest
+      become: true
+
+    - name: update nginx config
+      ansible.builtin.copy:
+        src: files/nginx.conf
+        dest: /etc/nginx/nginx.conf
+      notify:
+        - restart nginx
+      become: true
+
+    - name: upload index file
+      ansible.builtin.copy:
+        src: files/index.html
+        dest: /usr/share/nginx/html/index.html
+      become: true
+
+
+  handlers:
+
+    - name: restart nginx
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded
+      become: true
