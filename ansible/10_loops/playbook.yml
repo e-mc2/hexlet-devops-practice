@@ -1,0 +1,55 @@
+- name: Play for all service
+  hosts: all
+  gather_facts: false
+
+  vars:
+    users:
+      - {name: jaime, email: jaime@example.com}
+      - {name: sansa, email: sansa@example.com}
+      - {name: robert, email: robert@example.com}
+
+  tasks:
+    - name: Install git
+      ansible.builtin.apt:
+        name: git
+        state: latest
+      become: true
+      tags:
+       - skip_ansible_lint
+
+    - name: Add users
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        state: present
+      loop: "{{ users }}"
+      become: true
+
+    - name: Create gitconfig for users
+      ansible.builtin.template:
+        src: files/.gitconfig.j2
+        dest: /home/{{ item.name }}/.gitconfig
+        owner: "{{ item.name }}"
+        group: "{{ item.name }}"
+        mode: 0644
+      loop: "{{ users }}"
+      become: true
+
+    - name: Create dir .ssh for each users
+      ansible.builtin.file:
+        path: /home/{{ item.name }}/.ssh
+        state: directory
+        owner: "{{ item.name }}"
+        group: "{{ item.name }}"
+        mode: 0744
+      loop: "{{ users }}"
+      become: true
+
+    - name: Copy public key for each users
+      ansible.builtin.copy:
+        src: files/public.pub
+        dest: /home/{{ item.name }}/.ssh/authorized_keys
+        owner: "{{ item.name }}"
+        group: "{{ item.name }}"
+        mode: 0644
+      loop: "{{ users }}"
+      become: true
