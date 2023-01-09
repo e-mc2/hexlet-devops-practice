@@ -1,0 +1,22 @@
+- name: Install git for different systems
+  hosts: all
+
+  tasks:
+
+    - name: Install git for Ubuntu
+      ansible.builtin.apt:
+        name: git
+        state: latest
+      when: ansible_pkg_mgr == 'apt'
+      tags:
+        - skip_ansible_lint
+
+
+    - name: Install git for Centos
+      ansible.builtin.yum:
+        name: git
+        state: latest
+      when: ansible_pkg_mgr == 'yum'
+      tags:
+        - skip_ansible_lint
+      become: true
