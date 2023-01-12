@@ -1,0 +1,59 @@
+- name: Try ansible filters
+  hosts: all
+
+  vars:
+    root_dir: /var/tmp/www
+    nginx_port: 8080
+    server_name: "This is server {{ ansible_distribution }}"
+    # deployed_at: "{{ ansible_date_time['iso8601'] | to_datetime }}"
+
+  tasks:
+    - name: Install nginx on Ubuntu
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+      when: ansible_pkg_mgr == 'apt'
+
+    - name: Install EPEL repo on Centos
+      ansible.builtin.yum:
+        name: epel-release
+        state: present
+      when: ansible_pkg_mgr == 'yum'
+      become: true
+
+    - name: Install nginx on Centos
+      ansible.builtin.yum:
+        name: nginx
+        state: present
+      when: ansible_pkg_mgr == 'yum'
+      become: true
+
+    - name: Update nginx config
+      ansible.builtin.template:
+        dest: /etc/nginx/nginx.conf
+        src: files/nginx.conf.j2
+        mode: 0744
+      notify:
+        - Restart nginx
+      become: true
+
+    - name: Create root dir
+      ansible.builtin.file:
+        path: "{{ root_dir }}"
+        state: directory
+        mode: 0744
+      become: true
+
+    - name: Copy index.html
+      ansible.builtin.template:
+        dest: "{{ root_dir }}/index.html"
+        src: files/index.html.j2
+        mode: 0744
+      become: true
+
+  handlers:
+    - name: Restart nginx
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded
+      become: true
