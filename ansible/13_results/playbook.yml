@@ -1,0 +1,56 @@
+- name: Try ansible results
+  hosts: all
+
+  vars:
+    root_dir: /var/tmp/www
+    nginx_port: 8081
+    server_name: "This is server {{ ansible_distribution }}"
+    deployed_at: "{{ ansible_date_time.iso8601 | to_datetime('%Y-%m-%dT%H:%M:%SZ') }}"
+
+  tasks:
+    - name: Install apt packages
+      ansible.builtin.apt:
+        name:
+          - nginx
+          - cowsay
+        state: present
+      become: true
+
+    - name: Get cowsay output
+      ansible.builtin.shell:
+        cmd: cowsay "Hello, from web server!"
+      register: cowsay_output
+      tags:
+        - skip_ansible_lint
+
+    - name: Update nginx config
+      ansible.builtin.template:
+        dest: /etc/nginx/nginx.conf
+        src: files/nginx.conf.j2
+        mode: 0744
+      notify:
+        - Restart nginx
+      become: true
+
+    - name: Create root dir
+      ansible.builtin.file:
+        path: "{{ root_dir }}"
+        state: directory
+        mode: 0744
+      become: true
+
+    - name: Copy index.html
+      ansible.builtin.template:
+        dest: "{{ root_dir }}/index.html"
+        src: files/index.html.j2
+        mode: 0744
+      vars:
+        cowsay: "{{ cowsay_output.stdout }}"
+      become: true
+
+  handlers:
+    - name: Restart nginx
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded
+      become: true
