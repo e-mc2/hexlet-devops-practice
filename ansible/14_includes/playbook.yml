@@ -1,0 +1,11 @@
+- name: Run git.yml
+  import_playbook: git.yml
+
+- name: Run users.yml
+  import_playbook: users.yml
+
+  vars:
+    users:
+      - {name: jaime, email: jaime@example.com}
+      - {name: sansa, email: sansa@example.com}
+      - {name: robert, email: robert@example.com}

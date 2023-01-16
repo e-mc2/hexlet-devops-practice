@@ -1,0 +1,10 @@
+- name: Create users
+  hosts: all
+
+  tasks:
+    - name: Add users
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        state: present
+      loop: "{{ users }}"
+      become: true
