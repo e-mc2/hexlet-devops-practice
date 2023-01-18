@@ -1,0 +1,9 @@
+- name: Trying roles
+  hosts: yandex
+  vars:
+    users:
+      - {name: jaime, email: jaime@example.com}
+      - {name: sansa, email: sansa@example.com}
+      - {name: robert, email: robert@example.com}
+  roles:
+    - add_users
