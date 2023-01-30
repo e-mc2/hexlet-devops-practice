@@ -1,0 +1,56 @@
+- name: Trying external collections
+  hosts: yandex
+  gather_facts: false
+
+  vars:
+    root_dir: /var/tmp/www
+    nginx_port: 8181
+    users:
+      - {name: jaime, email: jaime@example.com}
+      - {name: sansa, email: sansa@example.com}
+      - {name: robert, email: robert@example.com}
+
+  tasks:
+
+    - name: Install GIT and NGINX
+      ansible.builtin.apt:
+        name:
+          - git
+          - nginx
+        state: present
+      become: true
+      tags: [apt]
+
+    - name: Update nginx config
+      ansible.builtin.template:
+        dest: /etc/nginx/nginx.conf
+        src: files/nginx.conf.j2
+        mode: 0744
+      notify:
+        - Restart nginx
+      become: true
+      tags: [nginx]
+
+    - name: Add users
+      loop: "{{ users }}"
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        state: present
+      become: true
+      tags: [users]
+
+    - name: Add authorized keys
+      loop: "{{ users }}"
+      ansible.posix.authorized_key:
+        user: "{{ item.name }}"
+        key: "{{ lookup('file', 'files/public.pub') }}"
+      become: true
+      tags: [users, ssh]
+
+  handlers:
+
+    - name: Restart nginx
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded
+      become: true
