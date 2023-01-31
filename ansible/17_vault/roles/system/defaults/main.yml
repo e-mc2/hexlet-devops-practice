@@ -1,0 +1,14 @@
+---
+username: dima
+
+password: changeme
+
+shell: /bin/bash
+
+ssh_port: 22
+
+packages:
+  - vim
+  - htop
+  - tmux
+  - speedtest-cli

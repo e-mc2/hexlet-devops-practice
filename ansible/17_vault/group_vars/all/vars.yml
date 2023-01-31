@@ -1,0 +1,20 @@
+---
+username: dima
+
+packages:
+  - vim
+  - htop
+  - speedtest-cli
+
+pip_install_packages:
+  - name: docker
+
+docker_apt_gpg_key: "https://download.docker.com/linux/ubuntu/gpg"
+
+docker_apt_repository: "deb https://download.docker.com/linux/ubuntu jammy stable"
+
+lan_subnet: 192.168.1.0/24
+
+lan_base: "{{ lan_subnet | regex_replace('0/\\d{2}', '') }}"
+
+server_ip: "{{ lan_base }}.3"

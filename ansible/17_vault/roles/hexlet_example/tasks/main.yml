@@ -1,0 +1,12 @@
+---
+- name: Run container with Hexlet Devops-example-app
+  community.docker.docker_container:
+    name: devops-example-app
+    image: hexletcomponents/devops-example-app
+    state: started
+    recreate: true
+    ports:
+     - "3000:3000"
+    env:
+      SERVER_MESSAGE: "{{ greeting_msg }}"
+      ROLLBAR_TOKEN: "{{ rollbar_token }}"

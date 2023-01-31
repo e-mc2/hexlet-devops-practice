@@ -1,0 +1,16 @@
+- name: Deploy app with Vault
+  hosts: all
+  become: true
+
+  # pre_tasks:
+  #   - name: DEBUG
+  #     ansible.builtin.debug:
+  #       var: lan_base
+  #   - name: END PLAY
+  #     ansible.builtin.meta: end_play
+
+  roles:
+    - system
+    - geerlingguy.pip
+    - geerlingguy.docker
+    - hexlet_example
